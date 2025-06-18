@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sledování cíle v eKorunách - Inteligentní tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 25px 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: #2c3e50;
+      }
+      h2 {
+        margin-top: 40px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 30px;
+      }
+      .chart-container {
+        position: relative;
+        height: 50vh;
+        width: 100%;
+        margin-top: 30px;
+      }
+      .table-container {
+        margin-top: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+      }
+      thead th {
+        background-color: #e9ecef;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      th[title] {
+        cursor: help;
+      }
+      tr.is-today {
+        background-color: #fff3cd !important;
+        border-left: 4px solid #ffc107;
+      }
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      tr:hover {
+        background-color: #e2e6ea;
+      }
+      input[type='number'] {
+        width: 90px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        text-align: right;
+        font-size: 14px;
+      }
+      .cumulative-cell,
+      .plan-cell,
+      .adjusted-plan-cell {
+        text-align: right;
+      }
+      .cumulative-cell {
+        font-weight: bold;
+      }
+      .adjusted-plan-cell.is-behind {
+        font-weight: bold;
+        color: #d9534f;
+        background-color: #f8d7da;
+      }
+      .adjusted-plan-cell.is-ahead {
+        font-style: italic;
+        color: #28a745;
+        background-color: #d4edda;
+      }
+      .instructions {
+        background-color: #e7f3fe;
+        border-left: 6px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .controls {
+        text-align: right;
+        margin-top: 15px;
+      }
+      .download-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+      .clear-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+      .tutorial {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 25px;
+        margin-top: 40px;
+      }
+      .tutorial h3 {
+        color: #2c3e50;
+        margin-top: 0;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 8px;
+      }
+      .tutorial-step {
+        margin: 15px 0;
+        padding: 10px;
+        background-color: white;
+        border-left: 4px solid #007bff;
+        border-radius: 4px;
+      }
+      .tutorial-step strong {
+        color: #007bff;
+      }
+      .stats {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .stat-item {
+        display: inline-block;
+        margin: 0 15px;
+        font-size: 14px;
+      }
+      .stat-value {
+        font-weight: bold;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Sledování cíle v eKorunách - Inteligentní tracker</h1>
+      <p class="instructions">
+        <strong>Vítejte u vašeho osobního průvodce k úspěchu!</strong> 💪 Tento nástroj vám pomůže dosáhnout cíle 27 842 eKorun mezi 11.
+        červnem a 30. září 2025. Stačí každý pracovní den zapsat, kolik eKorun jste získali, a nástroj vám ukáže, zda jste na správné cestě.
+        Pokud se dostanete do skluzu, automaticky vám navrhne novou "záchrannou strategii" - přesně to, co potřebujete dělat, abyste cíl
+        stále stihli. <strong>Můžete na to!</strong> 🎯
+      </p>
+
+      <div class="stats" id="statsContainer">
+        <div class="stat-item">
+          <span>Celkové dny (bez víkendů): </span>
+          <span class="stat-value" id="totalWorkDays">-</span>
+        </div>
+        <div class="stat-item">
+          <span>Zbývající dny: </span>
+          <span class="stat-value" id="remainingDays">-</span>
+        </div>
+        <div class="stat-item">
+          <span>Původní denní cíl: </span>
+          <span class="stat-value" id="originalDailyGoal">-</span>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="progressChart"></canvas>
+      </div>
+      <h2>Záznamy a data (pouze pracovní dny)</h2>
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Získané eKč za den</th>
+              <th>eKč celkem (kumulativně)</th>
+              <th>Původní plán / Kritická mez</th>
+              <th title="Aktivuje se při skluzu - ukazuje nový denní cíl pro dohánění">Upravený plán (Záchranná strategie)</th>
+            </tr>
+          </thead>
+          <tbody id="dataBody"></tbody>
+        </table>
+      </div>
+      <div class="controls">
+        <button id="downloadExcelButton" class="download-button">Stáhnout Excel (XLSX)</button>
+        <button id="downloadCsvButton" class="download-button">Stáhnout CSV</button>
+        <button id="clearDataButton" class="clear-button">Vymazat uložená data</button>
+      </div>
+
+      <!-- Tutorial Section -->
+      <div class="tutorial">
+        <h3>📖 Jak používat tento nástroj</h3>
+
+        <div class="tutorial-step">
+          <strong>1. Denní zadávání dat:</strong><br />
+          Každý pracovní den (pondělí-pátek) zapište do sloupce "Získané eKč za den", kolik eKorun jste ten den získali. Víkendy se
+          nepočítají a nejsou v tabulce.
+        </div>
+
+        <div class="tutorial-step">
+          <strong>2. Sledování pokroku:</strong><br />
+          Sledujte sloupec "eKč celkem" - ukazuje váš celkový pokrok. Porovnejte ho s "Původním plánem" abyste viděli, zda jste na správné
+          cestě.
+        </div>
+
+        <div class="tutorial-step">
+          <strong>3. Kritická mez:</strong><br />
+          Červené číslo pod původním plánem je kritická mez (80% plánu). Pokud klesne vaše realita pod tuto mez, je čas začít více zabírat!
+        </div>
+
+        <div class="tutorial-step">
+          <strong>4. Inteligentní "Záchranná strategie":</strong><br />
+          Nejchytřejší část nástroje! Pokud se dostanete za původní plán, sloupec "Upravený plán" se automaticky aktivuje a ukáže vám:
+          <ul style="margin-top: 8px">
+            <li><strong>Nový denní cíl</strong> - kolik potřebujete získávat denně od dneška</li>
+            <li><strong>Kumulativní cíle</strong> - kde byste měli být každý další den</li>
+            <li><strong>Reálný plán návratu</strong> - přesně co dělat, abyste cíl stihli</li>
+          </ul>
+        </div>
+
+        <div class="tutorial-step">
+          <strong>5. Vizuální sledování:</strong><br />
+          Graf nahoře ukazuje tři linie:
+          <ul style="margin-top: 8px">
+            <li><strong>Modrá (REALITA)</strong> - váš skutečný pokrok</li>
+            <li><strong>Šedá přerušovaná (PLÁN)</strong> - původní ideální trajektorie</li>
+            <li><strong>Červená (KRITICKÁ MEZ)</strong> - varovná hranice</li>
+          </ul>
+        </div>
+
+        <div class="tutorial-step">
+          <strong>6. Export dat:</strong><br />
+          Můžete si stáhnout svá data jako Excel nebo CSV soubor pro další analýzu nebo zálohu.
+        </div>
+
+        <div class="tutorial-step">
+          <strong>💡 Tip:</strong><br />
+          Nástroj ukládá data automaticky do vašeho prohlížeče. Můžete stránku zavřít a vrátit se později - data zůstanou zachována!
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // --- NASTAVENÍ ---
+        const startDate = new Date('2025-06-11T00:00:00')
+        const endDate = new Date('2025-09-30T00:00:00')
+        const totalGoal = 27842
+        const LOCAL_STORAGE_KEY = 'eKorunyProgressData_v7_workdays'
+
+        let chartData = []
+
+        // --- POMOCNÉ FUNKCE ---
+        function formatCurrency(value) {
+          return value.toFixed(2).replace('.', ',') + ' Kč'
+        }
+
+        function isSameDay(date1, date2) {
+          return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate()
+        }
+
+        function isWeekend(date) {
+          const day = date.getDay()
+          return day === 0 || day === 6 // Neděle nebo sobota
+        }
+
+        function isWorkDay(date) {
+          return !isWeekend(date)
+        }
+
+        // --- GENEROVÁNÍ DAT (BEZ VÍKENDŮ) ---
+        function generateInitialData() {
+          let data = []
+          let currentDate = new Date(startDate)
+
+          // Nejdříve spočítáme všechny pracovní dny
+          let workDays = []
+          while (currentDate <= endDate) {
+            if (isWorkDay(currentDate)) {
+              workDays.push(new Date(currentDate))
+            }
+            currentDate.setDate(currentDate.getDate() + 1)
+          }
+
+          const totalWorkDays = workDays.length
+          const dailyGoalIncrement = totalGoal / (totalWorkDays - 1) // První den začíná na 0
+
+          // Vytvoříme data pro každý pracovní den
+          workDays.forEach((date, index) => {
+            const cumulativePlan = index === 0 ? 0 : dailyGoalIncrement * index
+            const critical = cumulativePlan * 0.8
+
+            data.push({
+              date: new Date(date),
+              plan: index === workDays.length - 1 ? totalGoal : cumulativePlan, // Poslední den = přesně cíl
+              critical: index === workDays.length - 1 ? totalGoal * 0.8 : critical,
+              dailyInput: 0,
+              reality: 0,
+              workDayIndex: index,
+            })
+          })
+
+          // Aktualizujeme statistiky
+          document.getElementById('totalWorkDays').textContent = totalWorkDays
+          document.getElementById('originalDailyGoal').textContent = formatCurrency(dailyGoalIncrement)
+
+          return data
+        }
+
+        function saveDataToLocalStorage() {
+          const dataToSave = chartData.map(d => ({
+            dateStr: d.date.toISOString(),
+            dailyInput: d.dailyInput,
+          }))
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave))
+        }
+
+        function loadDataFromLocalStorage() {
+          const savedJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
+          if (savedJSON) {
+            try {
+              const savedData = JSON.parse(savedJSON)
+              if (Array.isArray(savedData)) {
+                savedData.forEach(saved => {
+                  const matchingDay = chartData.find(d => d.date.toISOString() === saved.dateStr)
+                  if (matchingDay) {
+                    matchingDay.dailyInput = Number(saved.dailyInput) || 0
+                  }
+                })
+              }
+            } catch (e) {
+              console.error('Chyba při načítání dat:', e)
+            }
+          }
+        }
+
+        // --- HLAVNÍ AKTUALIZAČNÍ FUNKCE ---
+        function updateAll() {
+          const today = new Date()
+          today.setHours(0, 0, 0, 0) // Normalizace času
+
+          // KROK 1: Vypočítat kumulativní realitu
+          let cumulativeReality = 0
+          chartData.forEach(day => {
+            cumulativeReality += day.dailyInput
+            day.reality = cumulativeReality
+          })
+
+          // KROK 2: Najít nejvhodnější den pro porovnání
+          let adjustmentNeeded = false
+          let newDailyTarget = 0
+          let currentReality = 0
+          let currentPlan = 0
+          let comparisonDate = null
+
+          // Najdeme nejpozději zadaný den s daty, nebo dnešní den
+          let lastDataIndex = -1
+          for (let i = chartData.length - 1; i >= 0; i--) {
+            if (chartData[i].dailyInput > 0 || isSameDay(chartData[i].date, today)) {
+              lastDataIndex = i
+              break
+            }
+          }
+
+          // Pokud nemáme žádná data, zkusíme alespoň najít dnešní den
+          if (lastDataIndex === -1) {
+            lastDataIndex = chartData.findIndex(d => isSameDay(d.date, today))
+          }
+
+          // Pokud stále nemáme index, použijeme poslední pracovní den před dnes
+          if (lastDataIndex === -1) {
+            for (let i = chartData.length - 1; i >= 0; i--) {
+              if (chartData[i].date <= today) {
+                lastDataIndex = i
+                break
+              }
+            }
+          }
+
+          if (lastDataIndex >= 0) {
+            currentReality = chartData[lastDataIndex].reality
+            currentPlan = chartData[lastDataIndex].plan
+            comparisonDate = chartData[lastDataIndex].date
+
+            console.log('Porovnávám:', {
+              datum: comparisonDate.toLocaleDateString('cs-CZ'),
+              realita: currentReality,
+              plan: currentPlan,
+              pozadu: currentReality < currentPlan,
+            })
+
+            // Zkontrolujeme, jestli jsme pozadu
+            if (currentReality < currentPlan && currentPlan > 0) {
+              adjustmentNeeded = true
+
+              // Spočítáme zbývající pracovní dny od dneška
+              const remainingWorkDays = chartData.filter(d => d.date >= today).length
+
+              if (remainingWorkDays > 0) {
+                const remainingGoal = totalGoal - currentReality
+                newDailyTarget = remainingGoal / remainingWorkDays
+
+                console.log('Úprava plánu:', {
+                  zbývacíCíl: remainingGoal,
+                  zbývacíDny: remainingWorkDays,
+                  novýDenníCíl: newDailyTarget,
+                })
+              }
+            }
+          }
+
+          // Aktualizujeme zbývající dny
+          const remainingWorkDays = chartData.filter(d => d.date >= today).length
+          document.getElementById('remainingDays').textContent = remainingWorkDays
+
+          // KROK 3: Aktualizovat tabulku
+          chartData.forEach((day, index) => {
+            // Aktualizovat kumulativní hodnotu
+            document.getElementById(`cumulative-${index}`).textContent = formatCurrency(day.reality)
+
+            // Aktualizovat upravený plán
+            const adjustedCell = document.getElementById(`adjusted-plan-${index}`)
+            const isToday = isSameDay(day.date, today)
+            const isFutureDay = day.date >= today
+
+            if (!isFutureDay && !isToday) {
+              // Minulé dny
+              adjustedCell.innerHTML = '–'
+              adjustedCell.className = 'adjusted-plan-cell'
+            } else if (adjustmentNeeded && newDailyTarget > 0) {
+              // Potřebujeme úpravu - ukážeme nový plán
+              const daysFromComparisonDate = Math.max(0, chartData.filter(d => d.date >= comparisonDate && d.date <= day.date).length - 1)
+              const adjustedTarget = currentReality + (daysFromComparisonDate + 1) * newDailyTarget
+
+              adjustedCell.innerHTML = `<strong>${formatCurrency(adjustedTarget)}</strong><br><small>Nový cíl: +${formatCurrency(
+                newDailyTarget
+              )}/den</small>`
+              adjustedCell.className = 'adjusted-plan-cell is-behind'
+            } else if (isFutureDay || isToday) {
+              // Jsme napřed nebo v pořádku
+              adjustedCell.innerHTML = '<strong>✓ Jste v pořádku!</strong>'
+              adjustedCell.className = 'adjusted-plan-cell is-ahead'
+            } else {
+              adjustedCell.innerHTML = '–'
+              adjustedCell.className = 'adjusted-plan-cell'
+            }
+          })
+
+          // KROK 4: Aktualizovat graf
+          progressChart.data.datasets[0].data = chartData.map(d => d.reality)
+          progressChart.update()
+        }
+
+        // --- INICIALIZACE ---
+        chartData = generateInitialData()
+
+        const tableBody = document.getElementById('dataBody')
+        const today = new Date()
+
+        chartData.forEach((day, index) => {
+          const row = tableBody.insertRow()
+          const isToday = isSameDay(day.date, today)
+
+          if (isToday) {
+            row.className = 'is-today'
+          }
+
+          const dayName = day.date.toLocaleDateString('cs-CZ', { weekday: 'short' })
+          const dateStr = day.date.toLocaleDateString('cs-CZ', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
+
+          row.innerHTML = `
+            <td><strong>${dayName}</strong><br>${dateStr}</td>
+            <td><input type="number" min="0" step="any" data-index="${index}" placeholder="0"></td>
+            <td class="cumulative-cell" id="cumulative-${index}">0,00 Kč</td>
+            <td class="plan-cell">
+              ${formatCurrency(day.plan)}<br>
+              <span style="color:#dc3545; font-size: 0.9em;">(kritická: ${formatCurrency(day.critical)})</span>
+            </td>
+            <td class="adjusted-plan-cell" id="adjusted-plan-${index}">–</td>
+          `
+        })
+
+        // Načtení uložených dat
+        loadDataFromLocalStorage()
+
+        // Naplnění inputů uloženými daty
+        chartData.forEach((day, index) => {
+          const input = document.querySelector(`input[data-index='${index}']`)
+          if (day.dailyInput > 0) {
+            input.value = day.dailyInput
+          }
+        })
+
+        // Vytvoření grafu
+        const ctx = document.getElementById('progressChart').getContext('2d')
+        const progressChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.map(d => {
+              const day = d.date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })
+              const weekday = d.date.toLocaleDateString('cs-CZ', { weekday: 'short' })
+              return `${day} (${weekday})`
+            }),
+            datasets: [
+              {
+                label: 'REALITA',
+                data: chartData.map(d => d.reality),
+                borderColor: '#007bff',
+                backgroundColor: '#007bff20',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.1,
+                pointBackgroundColor: '#007bff',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+              },
+              {
+                label: 'PLÁN',
+                data: chartData.map(d => d.plan),
+                borderColor: '#6c757d',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 2,
+                fill: false,
+              },
+              {
+                label: 'KRITICKÁ MEZ',
+                data: chartData.map(d => d.critical),
+                borderColor: '#dc3545',
+                borderWidth: 2,
+                pointRadius: 1,
+                fill: false,
+                borderDash: [2, 2],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: value => `${value.toLocaleString('cs-CZ')} Kč`,
+                },
+              },
+              x: {
+                ticks: {
+                  maxRotation: 45,
+                  minRotation: 45,
+                },
+              },
+            },
+            plugins: {
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`,
+                  title: context => {
+                    const index = context[0].dataIndex
+                    const date = chartData[index].date
+                    return date.toLocaleDateString('cs-CZ', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  },
+                },
+              },
+              legend: {
+                position: 'top',
+              },
+            },
+          },
+        })
+
+        // --- DOWNLOAD FUNKCE ---
+        function downloadCSV() {
+          const headers = [
+            'Datum',
+            'Den v týdnu',
+            'Získané eKč za den',
+            'eKč celkem (kumulativně)',
+            'Původní plán',
+            'Kritická mez',
+            'Upravený plán',
+          ]
+
+          let csvContent = headers.join(',') + '\n'
+
+          chartData.forEach((day, index) => {
+            const adjustedCell = document.getElementById(`adjusted-plan-${index}`)
+            const adjustedPlanText = adjustedCell.textContent.replace(/\n/g, ' ').replace(/,/g, ';')
+
+            const row = [
+              day.date.toLocaleDateString('cs-CZ'),
+              day.date.toLocaleDateString('cs-CZ', { weekday: 'long' }),
+              day.dailyInput || 0,
+              day.reality.toFixed(2),
+              day.plan.toFixed(2),
+              day.critical.toFixed(2),
+              adjustedPlanText,
+            ]
+            csvContent += row.join(',') + '\n'
+          })
+
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+          const link = document.createElement('a')
+          const url = URL.createObjectURL(blob)
+          link.setAttribute('href', url)
+          link.setAttribute('download', `eKoruny_tracker_${new Date().toISOString().split('T')[0]}.csv`)
+          link.style.visibility = 'hidden'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }
+
+        function downloadExcel() {
+          // Připravíme data pro Excel
+          const wsData = [
+            ['Sledování cíle v eKorunách - Export dat'],
+            ['Datum exportu:', new Date().toLocaleDateString('cs-CZ')],
+            ['Celkový cíl:', totalGoal + ' Kč'],
+            ['Období:', startDate.toLocaleDateString('cs-CZ') + ' - ' + endDate.toLocaleDateString('cs-CZ')],
+            [], // Prázdný řádek
+            ['Datum', 'Den v týdnu', 'Získané eKč za den', 'eKč celkem', 'Původní plán', 'Kritická mez', 'Upravený plán (poznámka)'],
+          ]
+
+          chartData.forEach((day, index) => {
+            const adjustedCell = document.getElementById(`adjusted-plan-${index}`)
+            const adjustedPlanText = adjustedCell.textContent.replace(/\n/g, ' ')
+
+            wsData.push([
+              day.date.toLocaleDateString('cs-CZ'),
+              day.date.toLocaleDateString('cs-CZ', { weekday: 'long' }),
+              day.dailyInput || 0,
+              day.reality,
+              day.plan,
+              day.critical,
+              adjustedPlanText,
+            ])
+          })
+
+          // Vytvoření workbooku
+          const wb = XLSX.utils.book_new()
+          const ws = XLSX.utils.aoa_to_sheet(wsData)
+
+          // Nastavení šířky sloupců
+          ws['!cols'] = [
+            { width: 12 }, // Datum
+            { width: 12 }, // Den
+            { width: 18 }, // Získané eKč
+            { width: 16 }, // Celkem
+            { width: 16 }, // Plán
+            { width: 16 }, // Kritická
+            { width: 30 }, // Upravený plán
+          ]
+
+          XLSX.utils.book_append_sheet(wb, ws, 'eKoruny Tracker')
+
+          // Stažení souboru
+          const fileName = `eKoruny_tracker_${new Date().toISOString().split('T')[0]}.xlsx`
+          XLSX.writeFile(wb, fileName)
+        }
+
+        // Event listenery
+        tableBody.addEventListener('input', event => {
+          if (event.target.tagName === 'INPUT') {
+            const index = parseInt(event.target.dataset.index)
+            chartData[index].dailyInput = parseFloat(event.target.value) || 0
+            updateAll()
+            saveDataToLocalStorage()
+          }
+        })
+
+        document.getElementById('downloadCsvButton').addEventListener('click', downloadCSV)
+
+        document.getElementById('downloadExcelButton').addEventListener('click', downloadExcel)
+
+        document.getElementById('clearDataButton').addEventListener('click', () => {
+          if (confirm('Opravdu si přejete smazat všechna zadaná data? Tato akce je nevratná.')) {
+            localStorage.removeItem(LOCAL_STORAGE_KEY)
+            location.reload()
+          }
+        })
+
+        // První aktualizace
+        updateAll()
+      })
+    </script>
+  </body>
+</html>
