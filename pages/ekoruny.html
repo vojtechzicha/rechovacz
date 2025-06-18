@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulačka eKorun | Generali</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background-color: #ffffff;
+        padding: 25px 40px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        border-top: 5px solid #d91f2a; /* Generali Red */
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #6c757d;
+        margin-top: 0;
+        margin-bottom: 30px;
+      }
+      .calculator-form {
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #495057;
+      }
+      .input-wrapper {
+        position: relative;
+      }
+      .input-wrapper .currency-symbol {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-weight: 500;
+      }
+      input[type='number'] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      input[type='number']:focus {
+        outline: none;
+        border-color: #d91f2a;
+        box-shadow: 0 0 0 3px rgba(217, 31, 42, 0.15);
+      }
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .radio-group label:hover {
+        border-color: #adb5bd;
+      }
+      .radio-group input[type='radio'] {
+        margin-right: 15px;
+        width: 18px;
+        height: 18px;
+        accent-color: #d91f2a;
+      }
+      .radio-group input[type='radio']:checked + .radio-label {
+        font-weight: 600;
+      }
+      .radio-group label.selected {
+        border-color: #d91f2a;
+        box-shadow: 0 0 0 3px rgba(217, 31, 42, 0.15);
+      }
+      .radio-description {
+        font-size: 0.9em;
+        color: #6c757d;
+        margin-top: 4px;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background-color: #d91f2a;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .submit-btn:hover {
+        background-color: #b81922;
+      }
+      .result-section {
+        margin-top: 30px;
+        text-align: center;
+        padding: 20px;
+        background-color: #e7f3fe;
+        border-radius: 8px;
+      }
+      .result-section h2 {
+        margin: 0 0 10px 0;
+        color: #004085;
+      }
+      #result {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: #004085;
+      }
+      .history-section {
+        margin-top: 40px;
+      }
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .clear-history-btn {
+        background: none;
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s, color 0.2s;
+      }
+      .clear-history-btn:hover {
+        background-color: #dc3545;
+        color: white;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+      }
+      thead th {
+        background-color: #e9ecef;
+        font-weight: 600;
+      }
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      td:last-child {
+        font-weight: 600;
+      }
+      .rules-section {
+        margin-top: 40px;
+        padding: 25px;
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+      }
+      .rules-section h3 {
+        margin-top: 0;
+        border-bottom: 2px solid #d91f2a;
+        padding-bottom: 10px;
+        color: #2c3e50;
+      }
+      .rules-section blockquote {
+        margin: 15px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-left: 5px solid #ced4da;
+        font-style: italic;
+        color: #495057;
+      }
+      .rules-section .source {
+        font-size: 0.9em;
+        text-align: right;
+        color: #6c757d;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Kalkulačka eKorun</h1>
+        <p class="subtitle">Zadejte výši získané provize a zjistěte svůj nárok na eKoruny.</p>
+      </header>
+
+      <main>
+        <form id="ekoruny-form" class="calculator-form">
+          <div class="form-group">
+            <label for="commission">Výše získané provize</label>
+            <div class="input-wrapper">
+              <input type="number" id="commission" placeholder="Např. 5000" min="0" step="any" required />
+              <span class="currency-symbol">Kč</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Typ produktu</label>
+            <div class="radio-group">
+              <label id="label-other">
+                <input type="radio" name="productType" value="other" checked />
+                <span class="radio-label">
+                  Ostatní pojistné a nepojistné produkty
+                  <div class="radio-description">Sazba: 200 eKč za každých 1 000 Kč provize</div>
+                </span>
+              </label>
+              <label id="label-motor">
+                <input type="radio" name="productType" value="motor" />
+                <span class="radio-label">
+                  Pojištění motorových vozidel
+                  <div class="radio-description">Sazba: 100 eKč za každých 1 000 Kč provize</div>
+                </span>
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Vypočítat eKoruny</button>
+        </form>
+
+        <div class="result-section">
+          <h2>Získané eKoruny:</h2>
+          <span id="result">0.00</span>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Historie výpočtů</h3>
+            <button id="clear-history-btn" class="clear-history-btn">Vymazat historii</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Provize</th>
+                <th>Typ produktu</th>
+                <th>Datum</th>
+                <th>Získané eKoruny</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <!-- Historie bude vložena zde -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <footer class="rules-section">
+        <h3>Jak se počítají eKoruny? (Pravidla dle PS 1639)</h3>
+        <p>
+          Tato kalkulačka vychází z pravidel uvedených v pracovní směrnici "PS 1639 Odměňování a kariéra Poradců pobočkové sítě". Níže jsou
+          klíčová pravidla pro výpočet:
+        </p>
+
+        <h4>Základní pravidlo pro výpočet</h4>
+        <p>Počet eKorun se odvíjí od výše základu vypočtené provize. Provizí se zde rozumí odměna před aplikací Výkonového koeficientu.</p>
+
+        <h4>Sazby podle typu produktu</h4>
+        <blockquote>
+          Z každého 1.000 Kč (jeden tisíc korun) základu vypočtené Provize je
+          <strong>200 eKorun za pojistné a nepojistné produkty</strong> vyjma pojištění motorových vozidel.
+        </blockquote>
+        <blockquote>Za pojištění <strong>motorových vozidel je výše eKorun 100</strong>.</blockquote>
+
+        <p>
+          To znamená, že pro výpočet stačí zadat výši provize, kterou jste za daný obchod získali, a zvolit správnou kategorii produktu.
+        </p>
+
+        <p class="source">Zdroj: PS 1639, verze 19, účinnost od 01.06.2025 (zejména kap. 7)</p>
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('ekoruny-form')
+        const commissionInput = document.getElementById('commission')
+        const resultDisplay = document.getElementById('result')
+        const historyBody = document.getElementById('history-body')
+        const clearHistoryBtn = document.getElementById('clear-history-btn')
+        const radioLabels = document.querySelectorAll('.radio-group label')
+
+        const E_KORUNY_HISTORY_KEY = 'eKorunyCalculatorHistory'
+
+        // Funkce pro výpočet
+        const calculateEkoruny = (commission, productType) => {
+          if (isNaN(commission) || commission <= 0) {
+            return 0
+          }
+          const rate = productType === 'motor' ? 100 : 200
+          return (commission / 1000) * rate
+        }
+
+        // Funkce pro formátování čísel
+        const formatNumber = num => {
+          return num.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        }
+
+        // Funkce pro aktualizaci UI
+        const updateResult = value => {
+          resultDisplay.textContent = formatNumber(value)
+        }
+
+        // Funkce pro přidání do historie
+        const addToHistory = entry => {
+          let history = JSON.parse(localStorage.getItem(E_KORUNY_HISTORY_KEY)) || []
+          history.unshift(entry) // Přidat na začátek
+          if (history.length > 20) {
+            history.pop() // Omezit historii na 20 záznamů
+          }
+          localStorage.setItem(E_KORUNY_HISTORY_KEY, JSON.stringify(history))
+          renderHistory()
+        }
+
+        // Funkce pro vykreslení historie
+        const renderHistory = () => {
+          const history = JSON.parse(localStorage.getItem(E_KORUNY_HISTORY_KEY)) || []
+          historyBody.innerHTML = ''
+          if (history.length === 0) {
+            historyBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#6c757d;">Zatím žádné záznamy.</td></tr>'
+            clearHistoryBtn.style.display = 'none'
+          } else {
+            clearHistoryBtn.style.display = 'block'
+            history.forEach(entry => {
+              const row = document.createElement('tr')
+              row.innerHTML = `
+                            <td>${formatNumber(entry.commission)} Kč</td>
+                            <td>${entry.productTypeName}</td>
+                            <td>${entry.timestamp}</td>
+                            <td>${formatNumber(entry.ekoruny)}</td>
+                        `
+              historyBody.appendChild(row)
+            })
+          }
+        }
+
+        // Zpracování odeslání formuláře
+        form.addEventListener('submit', e => {
+          e.preventDefault()
+          const commission = parseFloat(commissionInput.value)
+          const productType = document.querySelector('input[name="productType"]:checked').value
+          const productTypeName = productType === 'motor' ? 'Motorová vozidla' : 'Ostatní'
+
+          const ekoruny = calculateEkoruny(commission, productType)
+          updateResult(ekoruny)
+
+          // Přidání do historie, jen pokud je provize > 0
+          if (commission > 0) {
+            const newEntry = {
+              commission: commission,
+              productType: productType,
+              productTypeName: productTypeName,
+              ekoruny: ekoruny,
+              timestamp: new Date().toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            }
+            addToHistory(newEntry)
+          }
+        })
+
+        // Vymazání historie
+        clearHistoryBtn.addEventListener('click', () => {
+          if (confirm('Opravdu si přejete smazat celou historii výpočtů?')) {
+            localStorage.removeItem(E_KORUNY_HISTORY_KEY)
+            renderHistory()
+            updateResult(0)
+          }
+        })
+
+        // Vylepšení pro radio buttony
+        radioLabels.forEach(label => {
+          label.addEventListener('click', () => {
+            radioLabels.forEach(l => l.classList.remove('selected'))
+            label.classList.add('selected')
+          })
+        })
+        // Nastavit výchozí 'selected' stav
+        document.querySelector('.radio-group input[name="productType"]:checked').parentElement.classList.add('selected')
+
+        // První vykreslení historie při načtení stránky
+        renderHistory()
+      })
+    </script>
+  </body>
+</html>
