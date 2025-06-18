@@ -125,6 +125,20 @@
         font-weight: bold;
         margin-left: 10px;
       }
+      .import-button {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+      .file-input {
+        display: none;
+      }
       .clear-button {
         background-color: #dc3545;
         color: white;
@@ -222,6 +236,8 @@
         </table>
       </div>
       <div class="controls">
+        <input type="file" id="csvFileInput" class="file-input" accept=".csv" />
+        <button id="importCsvButton" class="import-button">Nahrát CSV</button>
         <button id="downloadExcelButton" class="download-button">Stáhnout Excel (XLSX)</button>
         <button id="downloadCsvButton" class="download-button">Stáhnout CSV</button>
         <button id="clearDataButton" class="clear-button">Vymazat uložená data</button>
@@ -269,13 +285,23 @@
         </div>
 
         <div class="tutorial-step">
-          <strong>6. Export dat:</strong><br />
-          Můžete si stáhnout svá data jako Excel nebo CSV soubor pro další analýzu nebo zálohu.
+          <strong>6. Import a Export dat:</strong><br />
+          <ul style="margin-top: 8px">
+            <li><strong>Nahrát CSV:</strong> Importujte data z CSV souboru (formát: Datum, Den, Získané eKč, ...)</li>
+            <li><strong>Stáhnout CSV:</strong> Základní export pro další zpracování</li>
+            <li><strong>Stáhnout Excel:</strong> Pokročilý export s dvěma listy - "Data" s tabulkou a "Graf" s daty pro vytvoření grafu</li>
+          </ul>
+        </div>
+
+        <div class="tutorial-step">
+          <strong>7. Automatické ukládání:</strong><br />
+          Nástroj ukládá data automaticky do vašeho prohlížeče. Můžete stránku zavřít a vrátit se později - data zůstanou zachována!
         </div>
 
         <div class="tutorial-step">
           <strong>💡 Tip:</strong><br />
-          Nástroj ukládá data automaticky do vašeho prohlížeče. Můžete stránku zavřít a vrátit se později - data zůstanou zachována!
+          Pro zálohu doporučujeme pravidelně exportovat data do Excel souboru. Při přechodu na nový počítač můžete data znovu importovat
+          pomocí CSV.
         </div>
       </div>
     </div>
@@ -707,11 +733,87 @@
             { width: 30 }, // Upravený plán
           ]
 
-          XLSX.utils.book_append_sheet(wb, ws, 'eKoruny Tracker')
+          XLSX.utils.book_append_sheet(wb, ws, 'Data')
+
+          // Vytvoření druhého listu s daty pro graf
+          const chartSheetData = [['Graf dat - Sledování eKorun'], [], ['Datum', 'Realita', 'Plán', 'Kritická mez']]
+
+          chartData.forEach(day => {
+            chartSheetData.push([day.date.toLocaleDateString('cs-CZ'), day.reality, day.plan, day.critical])
+          })
+
+          const chartWs = XLSX.utils.aoa_to_sheet(chartSheetData)
+          chartWs['!cols'] = [{ width: 12 }, { width: 15 }, { width: 15 }, { width: 15 }]
+
+          XLSX.utils.book_append_sheet(wb, chartWs, 'Graf')
 
           // Stažení souboru
           const fileName = `eKoruny_tracker_${new Date().toISOString().split('T')[0]}.xlsx`
           XLSX.writeFile(wb, fileName)
+        }
+
+        // CSV Import funkce
+        function importCSV(file) {
+          const reader = new FileReader()
+          reader.onload = function (e) {
+            try {
+              const csv = e.target.result
+              const lines = csv.split('\n')
+
+              if (lines.length < 2) {
+                alert('CSV soubor je prázdný nebo má nesprávný formát.')
+                return
+              }
+
+              // Předpokládáme formát: Datum, Den, Získané eKč, eKč celkem, Plán, Kritická, Upravený
+              const dataLines = lines.slice(1) // Přeskočit hlavičku
+              let importCount = 0
+
+              dataLines.forEach(line => {
+                if (line.trim()) {
+                  const columns = line.split(',')
+                  if (columns.length >= 3) {
+                    const dateStr = columns[0].trim()
+                    const dailyAmount = parseFloat(columns[2]) || 0
+
+                    // Najít odpovídající den v našich datech
+                    const matchingDay = chartData.find(day => {
+                      const csvDate = new Date(dateStr.split('.').reverse().join('-')) // Převod z DD.MM.YYYY
+                      return isSameDay(day.date, csvDate)
+                    })
+
+                    if (matchingDay && dailyAmount > 0) {
+                      matchingDay.dailyInput = dailyAmount
+                      importCount++
+                    }
+                  }
+                }
+              })
+
+              if (importCount > 0) {
+                // Aktualizovat tabulku
+                chartData.forEach((day, index) => {
+                  const input = document.querySelector(`input[data-index='${index}']`)
+                  if (day.dailyInput > 0) {
+                    input.value = day.dailyInput
+                  } else {
+                    input.value = ''
+                  }
+                })
+
+                updateAll()
+                saveDataToLocalStorage()
+                alert(`Úspěšně importováno ${importCount} záznamů!`)
+              } else {
+                alert('Nebyly nalezeny žádné platné záznamy k importu.')
+              }
+            } catch (error) {
+              console.error('Chyba při importu:', error)
+              alert('Nastala chyba při importu CSV souboru. Zkontrolujte formát souboru.')
+            }
+          }
+
+          reader.readAsText(file, 'UTF-8')
         }
 
         // Event listenery
@@ -722,6 +824,23 @@
             updateAll()
             saveDataToLocalStorage()
           }
+        })
+
+        document.getElementById('importCsvButton').addEventListener('click', () => {
+          document.getElementById('csvFileInput').click()
+        })
+
+        document.getElementById('csvFileInput').addEventListener('change', event => {
+          const file = event.target.files[0]
+          if (file && file.type === 'text/csv') {
+            if (confirm('Import CSV přepíše existující data. Chcete pokračovat?')) {
+              importCSV(file)
+            }
+          } else {
+            alert('Prosím vyberte platný CSV soubor.')
+          }
+          // Reset input pro možnost nahrát stejný soubor znovu
+          event.target.value = ''
         })
 
         document.getElementById('downloadCsvButton').addEventListener('click', downloadCSV)

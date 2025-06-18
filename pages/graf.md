@@ -98,16 +98,31 @@ datasets: [
 - Při načtení stránky se data obnovují
 - Validace: kontrola shody dat s aktuální strukturou
 
-### 5. Export funkcionalita
+### 5. Import a Export funkcionalita
+
+#### CSV Import
+```javascript
+function importCSV(file) {
+  // Očekávaný formát CSV:
+  // Datum, Den v týdnu, Získané eKč za den, eKč celkem, Původní plán, Kritická mez, Upravený plán
+  
+  // Automatická detekce a párování dat podle data
+  // Podporuje formát data: DD.MM.YYYY
+  // Přepíše existující dailyInput hodnoty
+}
+```
 
 #### CSV Export
 - Záhlaví v češtině
 - Všechny sloupce včetně upraveného plánu
 - Název souboru: `eKoruny_tracker_YYYY-MM-DD.csv`
 
-#### Excel Export (XLSX)
+#### Excel Export (XLSX) - Vylepšený
+- **List "Data":** Kompletní tabulka s metadaty
+- **List "Graf":** Připravená data pro vytvoření grafu v Excelu
+  - Sloupce: Datum, Realita, Plán, Kritická mez
+  - Optimalizované pro Excel charty
 - Použití SheetJS knihovny z CDN
-- Hlavička s metadaty (datum exportu, cíl, období)
 - Nastavené šířky sloupců pro lepší čitelnost
 - Název souboru: `eKoruny_tracker_YYYY-MM-DD.xlsx`
 
@@ -124,6 +139,9 @@ datasets: [
 .is-today { background-color: #fff3cd; } /* Dnešní den */
 .adjusted-plan-cell.is-behind { color: #d9534f; background-color: #f8d7da; } /* Skluz */
 .adjusted-plan-cell.is-ahead { color: #28a745; background-color: #d4edda; } /* Úspěch */
+.download-button { background-color: #28a745; } /* Export tlačítka */
+.import-button { background-color: #17a2b8; } /* Import tlačítko */
+.file-input { display: none; } /* Skrytý file input */
 ```
 
 ### Struktura dat
@@ -189,15 +207,29 @@ console.log('Debug:', {
 **Příčina:** Chart.js se nenačetl z CDN nebo canvas element neexistuje
 **Řešení:** Zkontrolovat síťové připojení a DOM strukturu
 
+### 5. CSV import nefunguje
+**Příčina:** Nesprávný formát CSV nebo kódování
+**Řešení:** 
+- Zkontrolovat formát: `Datum,Den,Získané eKč,...`
+- Zkontrolovat kódování souboru (UTF-8)
+- Datum ve formátu DD.MM.YYYY
+
+### 6. Excel export nemá druhý list
+**Příčina:** Chyba v XLSX knihovně nebo vytváření druhého listu
+**Řešení:** Zkontrolovat konzoli a dostupnost XLSX.utils funkcí
+
 ## Rozvojové směry
 
 ### Možná vylepšení
 1. **Týdenní cíle:** Přidání mezicílů po týdnech
 2. **Poznámky:** Možnost přidávat poznámky k jednotlivým dnům
 3. **Více cílů:** Sledování více než jednoho cíle současně
-4. **Statistiky:** Průměrné denní hodnoty, trendy
-5. **Importy:** Možnost nahrát CSV/Excel data
-6. **Offline PWA:** Přeměna na Progressive Web App
+4. **Pokročilé statistiky:** Průměrné denní hodnoty, trendy, predikce
+5. **Excel import:** Rozšíření importu o XLSX soubory
+6. **Grafické export:** Export grafu jako obrázek (PNG/SVG)
+7. **Batch import:** Import více souborů najednou
+8. **Offline PWA:** Přeměna na Progressive Web App
+9. **Cloud sync:** Synchronizace dat mezi zařízeními
 
 ### Architektura pro rozšíření
 ```javascript
@@ -232,8 +264,11 @@ const EkorunyTracker = {
 1. **Normální používání:** Zadávání dat den po dni
 2. **Skluz:** Záměrně nízké hodnoty -> kontrola aktivace upraveného plánu
 3. **Úspěch:** Vysoké hodnoty -> kontrola zobrazení "v pořádku"
-4. **Export:** Test CSV i Excel exportu
-5. **Persistence:** Obnovení stránky -> kontrola zachování dat
+4. **CSV Export:** Test exportu a kontrola formátu
+5. **Excel Export:** Test exportu se dvěma listy (Data + Graf)
+6. **CSV Import:** Test importu z externího CSV souboru
+7. **Persistence:** Obnovení stránky -> kontrola zachování dat
+8. **Import/Export cyklus:** Export -> vymazání dat -> import -> kontrola integrity
 
 ### Debug příkazy
 ```javascript
