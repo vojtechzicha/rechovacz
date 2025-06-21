@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kateřina Rechová - Finanční poradce Generali</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%);
+        color: white;
+        padding: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .generali-logo {
+        width: 60px;
+        height: 60px;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #c41e3a;
+        font-size: 12px;
+        text-align: center;
+        padding: 5px;
+      }
+
+      .header-text h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .header-text p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .contact-info {
+        text-align: right;
+        font-size: 0.95rem;
+      }
+
+      .contact-info div {
+        margin-bottom: 0.3rem;
+      }
+
+      /* Navigation */
+      .nav {
+        background: #2c3e50;
+        padding: 1rem 0;
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: background 0.3s;
+      }
+
+      .nav-menu a:hover,
+      .nav-menu a.active {
+        background: #c41e3a;
+      }
+
+      /* Main Content */
+      .main-content {
+        padding: 3rem 0;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .content-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #c41e3a;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .content-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .content-box h2 {
+        color: #c41e3a;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .content-box h3 {
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+        font-size: 1.2rem;
+      }
+
+      .client-story {
+        grid-column: 1 / -1;
+      }
+
+      .story-preview {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 3px solid #c41e3a;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .story-preview:hover {
+        background: #e9ecef;
+      }
+
+      .story-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .btn {
+        background: #c41e3a;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 1rem;
+        transition: background 0.3s;
+        margin-top: 1rem;
+      }
+
+      .btn:hover {
+        background: #a01729;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      /* Ask Question Form */
+      .question-form {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .warning {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .form-group textarea {
+        height: 120px;
+        resize: vertical;
+      }
+
+      /* Stories Detail Page */
+      .stories-detail {
+        display: none;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .story-navigation {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .story-part {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 3px solid #c41e3a;
+      }
+
+      .story-part h4 {
+        color: #c41e3a;
+        margin-bottom: 1rem;
+      }
+
+      /* Footer */
+      .footer {
+        background: #2c3e50;
+        color: white;
+        padding: 3rem 0 2rem;
+        margin-top: 4rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: #c41e3a;
+      }
+
+      .footer-section p,
+      .footer-section a {
+        color: #bdc3c7;
+        text-decoration: none;
+        line-height: 1.8;
+      }
+
+      .footer-section a:hover {
+        color: white;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid #34495e;
+        font-size: 0.9rem;
+        color: #95a5a6;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content {
+          text-align: center;
+        }
+
+        .contact-info {
+          text-align: center;
+        }
+
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-menu {
+          justify-content: center;
+          gap: 1rem;
+        }
+
+        .story-navigation {
+          justify-content: center;
+        }
+
+        .header-text h1 {
+          font-size: 1.5rem;
+        }
+      }
+
+      .qa-item {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 3px solid #c41e3a;
+      }
+
+      .qa-question {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .qa-answer {
+        color: #555;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo-section">
+            <div class="generali-logo">GENERALI<br />🦁</div>
+            <div class="header-text">
+              <h1>Kateřina Rechová</h1>
+              <p>Finanční poradce - Váš životní partner</p>
+            </div>
+          </div>
+          <div class="contact-info">
+            <div><strong>Telefon:</strong> +420 xxx xxx xxx</div>
+            <div><strong>Email:</strong> katerina.rechova@generali.cz</div>
+            <div><strong>Oblast:</strong> Praha a okolí</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="container">
+        <ul class="nav-menu">
+          <li><a href="#" class="active" onclick="showSection('home')">Úvod</a></li>
+          <li><a href="#" onclick="showSection('stories')">Příběhy klientů</a></li>
+          <li><a href="#" onclick="showSection('about')">O mně</a></li>
+          <li><a href="#" onclick="showSection('contact')">Kontakt</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Home Section -->
+        <div id="home-section">
+          <div class="content-grid">
+            <!-- Latest Client Story -->
+            <div class="content-box client-story">
+              <h2>📖 Nejnovější příběh klienta</h2>
+              <div class="story-preview" onclick="showClientStory()">
+                <div class="story-meta">
+                  <span><strong>Klient:</strong> Tomáš M. (35 let)</span>
+                  <span><strong>Situace:</strong> Mladá rodina</span>
+                </div>
+                <h3>Díl 1: Výzva - Když se život změní ze dne na den</h3>
+                <p>
+                  Tomáš se obrátil na naše poradenství v době, kdy se stal otcem. Uvědomil si, že potřebuje zabezpečit svou mladou rodinu
+                  pro případ nepředvídaných událostí. Měl obavy z toho, zda jeho současné finanční nastavení postačí pro pokrytí všech
+                  potřeb manželky a novorozeného dítěte...
+                </p>
+                <div class="btn" style="margin-top: 1rem">Číst celý příběh</div>
+              </div>
+            </div>
+
+            <!-- Q&A Section -->
+            <div class="content-box">
+              <h2>💬 Časté dotazy klientů</h2>
+
+              <div class="qa-item">
+                <div class="qa-question">Kdy je nejlepší doba začít spořit na důchod?</div>
+                <div class="qa-answer">
+                  Ideálně co nejdříve! Díky složenému úročení má každý rok velký význam. I malé částky investované v mladém věku mohou
+                  vytvořit značné bohatství do důchodu.
+                </div>
+              </div>
+
+              <div class="qa-item">
+                <div class="qa-question">Kolik pojištění skutečně potřebujem?</div>
+                <div class="qa-answer">
+                  Výše pojištění závisí na vašich závazků, rodinné situaci a životním stylu. Obecně doporučujeme pojistnou částku 5-10x
+                  ročního příjmu pro životní pojištění.
+                </div>
+              </div>
+
+              <div class="qa-item">
+                <div class="qa-question">Je lepší investovat, nebo spořit na spořicím účtu?</div>
+                <div class="qa-answer">
+                  Záleží na vašich cílech a časovém horizontu. Pro dlouhodobé cíle (5+ let) jsou investice obvykle výhodnější díky vyššímu
+                  potenciálnímu výnosu.
+                </div>
+              </div>
+            </div>
+
+            <!-- Ask Question Section -->
+            <div class="content-box">
+              <h2>❓ Zeptejte se</h2>
+              <div class="warning">
+                <strong>Upozornění:</strong> Vaše otázka a odpověď budou zveřejněny na této stránce jako veřejný dotaz s veřejnou odpovědí.
+                Nezahrnujte osobní nebo citlivé informace.
+              </div>
+
+              <div class="question-form">
+                <div class="form-group">
+                  <label for="question-name">Vaše jméno (nebo iniciály):</label>
+                  <input type="text" id="question-name" placeholder="např. Petra K." />
+                </div>
+                <div class="form-group">
+                  <label for="question-text">Vaše otázka:</label>
+                  <textarea id="question-text" placeholder="Napište zde svou otázku o financích, pojištění nebo investování..."></textarea>
+                </div>
+                <button class="btn" onclick="submitQuestion()">Odeslat otázku</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stories Detail Section -->
+        <div id="stories-section" class="stories-detail">
+          <h2>📚 Finanční individuální řešení pro jednotlivé klienty</h2>
+
+          <div class="story-navigation">
+            <button class="btn" onclick="showStory('story1')">Příběh 1: Tomáš M.</button>
+            <button class="btn btn-secondary" onclick="showStory('story2')">Příběh 2: Marie K.</button>
+          </div>
+
+          <!-- Story 1 - Complete -->
+          <div id="story1" class="story-complete">
+            <h3>Komplexní příběh: Tomáš M. - Zabezpečení mladé rodiny</h3>
+
+            <div class="story-part">
+              <h4>Díl 1: Výzva - Když se život změní ze dne na den</h4>
+              <p>
+                Tomáš se obrátil na naše poradenství v době, kdy se stal otcem. Uvědomil si, že potřebuje zabezpečit svou mladou rodinu pro
+                případ nepředvídaných událostí. Měl obavy z toho, zda jeho současné finanční nastavení postačí pro pokrytí všech potřeb
+                manželky a novorozeného dítěte. Jeho situace: věk 35 let, příjem 45 000 Kč měsíčně, hypotéka 2,8 mil. Kč, žádné životní
+                pojištění, minimální úspory.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 2: Analýza - Odhalení skutečných potřeb</h4>
+              <p>
+                Během našeho prvního setkání jsme provedli detailní analýzu Tomášovy finanční situace. Zjistili jsme, že v případě jeho
+                nečekané ztráty příjmu by rodina byla ve vážných finančních potížích již po 3 měsících. Identifikovali jsme tři klíčové
+                oblasti: životní pojištění pro pokrytí hypotéky a zabezpečení příjmu, zdravotní pojištění pro pokrytí nadstandardní péče a
+                pravidelné spoření na vzdělání dítěte a rodinné cíle.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 3: Řešení - Sestavení komprehenzního plánu</h4>
+              <p>
+                Na základě analýzy jsme navrhli individuální řešení: životní pojištění s pojistnou částkou 3,5 mil. Kč pro pokrytí hypotéky
+                a 5 let příjmu rodiny, připojištění invalidity a vážných onemocnění s roční rentou 240 000 Kč, investiční životní pojištění
+                s měsíční investicí 5 000 Kč pro dlouhodobé cíle a zdravotní pojištění pro celou rodinu s asistenčními službami.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 4: Implementace - Uvedení plánu do praxe</h4>
+              <p>
+                Implementaci jsme rozložili do 3 měsíců, abychom nezatížili rodinný rozpočet. První měsíc jsme spustili základní životní
+                pojištění a zdravotní připojištění. Druhý měsíc jsme přidali investiční složku a třetí měsíc dokončili optimalizaci s
+                připojištěními. Celkový měsíční náklad: 8 500 Kč, což představovalo 19% Tomášova příjmu - optimální poměr pro jeho situaci.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 5: Výsledek - Klidný spánek a jistota</h4>
+              <p>
+                Po roce spolupráce je Tomáš spokojený s výsledky. Jeho rodina je komplexně zabezpečená, investiční portfolio roste průměrným
+                tempem 6% ročně a rodina má vytvořený plán pro všechny životní situace. Bonus: během roku využili asistenční služby 3x
+                (právní poradenství při koupi auta, lékařskou konzultaci a pomoc s daňovým přiznáním). Tomáš říká: "Konečně spím klidně a
+                vím, že moje rodina je zabezpečená za všech okolností."
+              </p>
+            </div>
+          </div>
+
+          <!-- Story 2 - Complete -->
+          <div id="story2" class="story-complete" style="display: none">
+            <h3>Komplexní příběh: Marie K. - Příprava na důchod ve 45 letech</h3>
+
+            <div class="story-part">
+              <h4>Díl 1: Probuzení - Kdy už bude pozdě?</h4>
+              <p>
+                Marie (45) si uvědomila, že do důchodu jí zbývá pouze 20 let a její úspory jsou minimální. Jako samoživitelka dvou
+                dospívajících dětí se starala především o aktuální potřeby a důchod odkládala. Její situace: příjem 38 000 Kč, vlastní byt,
+                150 000 Kč na spořicím účtu, žádné investice.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 2: Kalkulace - Šokující zjištění</h4>
+              <p>
+                Při výpočtu jsme zjistili, že státní důchod bude pokrývat pouze 40% jejích současných výdajů. Pro udržení životní úrovně
+                bude potřebovat dodatečně 8 000 Kč měsíčně. To znamená nutnost našetřit 1,9 mil. Kč do důchodu - při započítání inflace a
+                růstu výdajů.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 3: Strategie - Není nikdy pozdě začít</h4>
+              <p>
+                Navrhli jsme kombinaci řešení: penzijní připojištění s příspěvkem zaměstnavatele (2 000 Kč měsíčně), investiční životní
+                pojištění s agresivnějším portfoliem (3 000 Kč měsíčně), optimalizace výdajů a refinancování úvěrů pro uvolnění dalších 1
+                000 Kč měsíčně na spoření.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 4: Realizace - Postupné budování</h4>
+              <p>
+                Začali jsme postupně. První 6 měsíců se Marie naučila spořit 2 000 Kč měsíčně, pak jsme postupně navyšovali. Důležité bylo,
+                aby se změny cítily přirozeně a nenarušily rodinný rozpočet. Po roce pravidelného spoření jsme dosáhli cílové částky 6 000
+                Kč měsíčně.
+              </p>
+            </div>
+
+            <div class="story-part">
+              <h4>Díl 5: Pokrok - Světlá budoucnost</h4>
+              <p>
+                Po dvou letech má Marie našetřeno již 180 000 Kč a její investice rostou průměrně o 7% ročně. Podle aktuální projekce bude
+                mít v důchodu k dispozici 12 000 Kč měsíčně navíc ke státnímu důchodu. Marie říká: "Lituju jen toho, že jsem nezačala dříve.
+                Ale jsem ráda, že teď už vím, že budu mít důstojný důchod."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Kateřina Rechová</h3>
+            <p>Finanční poradce Generali</p>
+            <p>Specializace na životní pojištění, investice a důchodové plánování</p>
+            <p>Váš životní partner pro finanční jistotu</p>
+          </div>
+          <div class="footer-section">
+            <h3>Kontakt</h3>
+            <p>Telefon: +420 xxx xxx xxx</p>
+            <p>Email: katerina.rechova@generali.cz</p>
+            <p>Oblast působnosti: Praha a okolí</p>
+            <p>Konzultace: Online i osobní</p>
+          </div>
+          <div class="footer-section">
+            <h3>Služby</h3>
+            <p>Životní pojištění</p>
+            <p>Investiční poradenství</p>
+            <p>Důchodové plánování</p>
+            <p>Pojištění majetku</p>
+            <p>Finanční analýza</p>
+          </div>
+          <div class="footer-section">
+            <h3>Generali</h3>
+            <p><a href="https://www.generaliceska.cz">Generali Česká pojišťovna</a></p>
+            <p><a href="https://www.generaliceskadistribuce.cz">Generali Česká Distribuce</a></p>
+            <p>Poradce je zástupcem Generali České Distribuce a.s.</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 rechova.cz - Kateřina Rechová, Finanční poradce Generali. Všechna práva vyhrazena.</p>
+          <p>
+            Informace související s udržitelností naleznete na
+            <a href="https://www.generaliceskadistribuce.cz/udrzitelne-finance">webu Generali České Distribuce</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Navigation functions
+      function showSection(section) {
+        // Hide all sections
+        document.getElementById('home-section').style.display = 'none'
+        document.getElementById('stories-section').style.display = 'none'
+
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+          link.classList.remove('active')
+        })
+
+        // Show selected section and mark nav as active
+        if (section === 'home') {
+          document.getElementById('home-section').style.display = 'block'
+          document.querySelector('[onclick="showSection(\'home\')"]').classList.add('active')
+        } else if (section === 'stories') {
+          document.getElementById('stories-section').style.display = 'block'
+          document.querySelector('[onclick="showSection(\'stories\')"]').classList.add('active')
+        } else if (section === 'about' || section === 'contact') {
+          // These would be separate pages in a real implementation
+          alert('Tato sekce bude dostupná v plné verzi webu.')
+          document.getElementById('home-section').style.display = 'block'
+          document.querySelector('[onclick="showSection(\'home\')"]').classList.add('active')
+        }
+      }
+
+      // Show client story detail
+      function showClientStory() {
+        showSection('stories')
+        showStory('story1')
+      }
+
+      // Show specific story
+      function showStory(storyId) {
+        // Hide all stories
+        document.querySelectorAll('.story-complete').forEach(story => {
+          story.style.display = 'none'
+        })
+
+        // Reset button styles
+        document.querySelectorAll('.story-navigation .btn').forEach(btn => {
+          btn.classList.remove('btn-secondary')
+          btn.classList.add('btn-secondary')
+        })
+
+        // Show selected story and highlight button
+        document.getElementById(storyId).style.display = 'block'
+
+        if (storyId === 'story1') {
+          document.querySelector('[onclick="showStory(\'story1\')"]').classList.remove('btn-secondary')
+        } else if (storyId === 'story2') {
+          document.querySelector('[onclick="showStory(\'story2\')"]').classList.remove('btn-secondary')
+        }
+      }
+
+      // Submit question function
+      function submitQuestion() {
+        const name = document.getElementById('question-name').value
+        const question = document.getElementById('question-text').value
+
+        if (!name.trim() || !question.trim()) {
+          alert('Prosím vyplňte všechna pole.')
+          return
+        }
+
+        // In a real implementation, this would send to a server
+        alert('Děkuji za vaši otázku! Odpověď obdržíte do 48 hodin a bude zveřejněna v sekci Časté dotazy.')
+
+        // Clear form
+        document.getElementById('question-name').value = ''
+        document.getElementById('question-text').value = ''
+      }
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function () {
+        showSection('home')
+      })
+    </script>
+  </body>
+</html>
