@@ -47,18 +47,15 @@
       }
 
       .generali-logo {
-        width: 60px;
-        height: 60px;
         background: white;
+        color: #c41e3a;
+        padding: 8px 16px;
         border-radius: 8px;
+        font-weight: bold;
+        font-size: 14px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #c41e3a;
-        font-size: 12px;
-        text-align: center;
-        padding: 5px;
+        gap: 8px;
       }
 
       .header-text h1 {
@@ -250,6 +247,109 @@
         margin-bottom: 2rem;
       }
 
+      /* Insurance CTA Section */
+      .insurance-cta {
+        text-align: center;
+        margin: 3rem 0;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%);
+        border-radius: 12px;
+        color: white;
+      }
+
+      .insurance-cta h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .insurance-cta p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .cta-button {
+        background: white;
+        color: #c41e3a;
+        padding: 1.2rem 3rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Insurance Options Section */
+      .insurance-section {
+        display: none;
+        padding: 3rem 0;
+      }
+
+      .insurance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .insurance-option {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #c41e3a;
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .insurance-option:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .insurance-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #c41e3a;
+      }
+
+      .insurance-option h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .insurance-option p {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .insurance-link {
+        background: #c41e3a;
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+        display: inline-block;
+      }
+
+      .insurance-link:hover {
+        background: #a01729;
+        color: white;
+      }
+
       .story-navigation {
         display: flex;
         gap: 1rem;
@@ -363,7 +463,7 @@
       <div class="container">
         <div class="header-content">
           <div class="logo-section">
-            <div class="generali-logo">GENERALI<br />🦁</div>
+            <div class="generali-logo">GENERALI 🦁</div>
             <div class="header-text">
               <h1>Kateřina Rechová</h1>
               <p>Finanční poradce - Váš životní partner</p>
@@ -383,6 +483,7 @@
       <div class="container">
         <ul class="nav-menu">
           <li><a href="#" class="active" onclick="showSection('home')">Úvod</a></li>
+          <li><a href="#" onclick="showSection('insurance')">Sjednat pojištění</a></li>
           <li><a href="#" onclick="showSection('stories')">Příběhy klientů</a></li>
           <li><a href="#" onclick="showSection('about')">O mně</a></li>
           <li><a href="#" onclick="showSection('contact')">Kontakt</a></li>
@@ -463,6 +564,107 @@
                 <button class="btn" onclick="submitQuestion()">Odeslat otázku</button>
               </div>
             </div>
+          </div>
+
+          <!-- Insurance CTA Section -->
+          <div class="insurance-cta">
+            <h2>Chraňte svou budoucnost</h2>
+            <p>Komplexní pojištění a finanční zabezpečení na míru vašim potřebám</p>
+            <a href="#" class="cta-button" onclick="showInsuranceOptions()">Sjednejte si pojištění</a>
+          </div>
+        </div>
+
+        <!-- Insurance Options Section -->
+        <div id="insurance-section" class="insurance-section">
+          <h2 style="text-align: center; color: #2c3e50; margin-bottom: 1rem">Vyberte si pojištění</h2>
+          <p style="text-align: center; color: #666; margin-bottom: 2rem">
+            Klikněte na typ pojištění, které vás zajímá, a přejděte přímo k online sjednání
+          </p>
+
+          <div class="insurance-grid">
+            <!-- Cestovní pojištění -->
+            <div class="insurance-option">
+              <div class="insurance-icon">✈️</div>
+              <h3>Cestovní pojištění</h3>
+              <p>
+                Komplexní ochrana pro vaše cesty do zahraničí i po České republice. Krytí léčebných výloh, storna cesty a dalších rizik.
+              </p>
+              <a
+                href="https://www.generaliceska.cz/cestovni-pojisteni-online-sjednani#/?externalSellerID=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+
+            <!-- Povinné ručení -->
+            <div class="insurance-option">
+              <div class="insurance-icon">🚗</div>
+              <h3>Povinné ručení</h3>
+              <p>Zákonně povinné pojištění vozidla s možností výhodných slev a bonusů. Rychlé sjednání online.</p>
+              <a
+                href="https://sjednat.generaliceska.cz/pojisteni-vozidel/?externalSellerID=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+
+            <!-- Havarijní pojištění -->
+            <div class="insurance-option">
+              <div class="insurance-icon">🔧</div>
+              <h3>Havarijní pojištění</h3>
+              <p>Ochrana vašeho vozidla proti krádeži, poškození a dalším rizikům. Možnost připojištění asistenčních služeb.</p>
+              <a
+                href="https://sjednat.generaliceska.cz/pojisteni-vozidel/?externalSellerID=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+
+            <!-- Pojištění majetku -->
+            <div class="insurance-option">
+              <div class="insurance-icon">🏠</div>
+              <h3>Pojištění majetku</h3>
+              <p>Komplexní ochrana vašeho domova, bytu a majetku proti živelním pohromám, krádeži a dalším rizikům.</p>
+              <a
+                href="https://www.generaliceska.cz/majetek-online-sjednani#/?externalSellerID=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+
+            <!-- Pojištění odpovědnosti -->
+            <div class="insurance-option">
+              <div class="insurance-icon">🛡️</div>
+              <h3>Pojištění odpovědnosti</h3>
+              <p>Ochrana před nároky na náhradu škody, kterou byste mohli způsobit třetím osobám v běžném životě.</p>
+              <a
+                href="https://www.generaliceska.cz/odpovednost-online-sjednani#/?externalSellerID=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+
+            <!-- Pojištění mazlíčků -->
+            <div class="insurance-option">
+              <div class="insurance-icon">🐾</div>
+              <h3>Pojištění mazlíčků</h3>
+              <p>Veterinární pojištění pro vaše čtyřnohé miláčky. Krytí nákladů na léčbu, operace a preventivní péči.</p>
+              <a
+                href="https://sjednat.generaliceska.cz/mazlicek/vas-mazlicek?externalSellerId=int-katerina-rechova"
+                target="_blank"
+                class="insurance-link"
+                >Sjednat online</a
+              >
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 3rem">
+            <button class="btn btn-secondary" onclick="showSection('home')">← Zpět na hlavní stránku</button>
           </div>
         </div>
 
@@ -629,6 +831,7 @@
         // Hide all sections
         document.getElementById('home-section').style.display = 'none'
         document.getElementById('stories-section').style.display = 'none'
+        document.getElementById('insurance-section').style.display = 'none'
 
         // Remove active class from all nav links
         document.querySelectorAll('.nav-menu a').forEach(link => {
@@ -642,12 +845,20 @@
         } else if (section === 'stories') {
           document.getElementById('stories-section').style.display = 'block'
           document.querySelector('[onclick="showSection(\'stories\')"]').classList.add('active')
+        } else if (section === 'insurance') {
+          document.getElementById('insurance-section').style.display = 'block'
+          document.querySelector('[onclick="showSection(\'insurance\')"]').classList.add('active')
         } else if (section === 'about' || section === 'contact') {
           // These would be separate pages in a real implementation
           alert('Tato sekce bude dostupná v plné verzi webu.')
           document.getElementById('home-section').style.display = 'block'
           document.querySelector('[onclick="showSection(\'home\')"]').classList.add('active')
         }
+      }
+
+      // Show insurance options
+      function showInsuranceOptions() {
+        showSection('insurance')
       }
 
       // Show client story detail
