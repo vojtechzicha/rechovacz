@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KOVONA SYSTEM - Návrh skupinového pojištění zaměstnanců</title>
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          min-height: 100vh;
+      }
+
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+      }
+
+      .header {
+          background: linear-gradient(135deg, #d10000 0%, #8b0000 100%);
+          color: white;
+          padding: 40px;
+          border-radius: 15px;
+          margin-bottom: 30px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+          animation: slideDown 0.5s ease-out;
+      }
+
+      @keyframes slideDown {
+          from {
+              transform: translateY(-20px);
+              opacity: 0;
+          }
+          to {
+              transform: translateY(0);
+              opacity: 1;
+          }
+      }
+
+      .header h1 {
+          font-size: 2.5em;
+          margin-bottom: 10px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .header .subtitle {
+          font-size: 1.2em;
+          opacity: 0.95;
+      }
+
+      .date-info {
+          margin-top: 20px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255,255,255,0.3);
+      }
+
+      .section {
+          background: white;
+          border-radius: 10px;
+          padding: 30px;
+          margin-bottom: 25px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+          animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(10px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+
+      h2 {
+          color: #d10000;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 3px solid #d10000;
+          font-size: 1.8em;
+      }
+
+      h3 {
+          color: #8b0000;
+          margin: 20px 0 15px 0;
+          font-size: 1.3em;
+      }
+
+      .employee-overview {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          margin: 20px 0;
+      }
+
+      .employee-card {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 20px;
+          border-radius: 10px;
+          text-align: center;
+          transition: transform 0.3s;
+      }
+
+      .employee-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+
+      .employee-card h4 {
+          font-size: 1.3em;
+          margin-bottom: 10px;
+      }
+
+      .employee-card .count {
+          font-size: 2.5em;
+          font-weight: bold;
+          margin: 10px 0;
+      }
+
+      .insurance-model {
+          border: 2px solid #e0e0e0;
+          border-radius: 10px;
+          padding: 20px;
+          margin: 20px 0;
+          background: #f9f9f9;
+          transition: all 0.3s;
+      }
+
+      .insurance-model:hover {
+          border-color: #d10000;
+          background: #fff;
+          box-shadow: 0 5px 20px rgba(209,0,0,0.1);
+      }
+
+      .model-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #e0e0e0;
+      }
+
+      .variant-badge {
+          display: inline-block;
+          padding: 5px 15px;
+          border-radius: 20px;
+          font-weight: bold;
+          color: white;
+          font-size: 0.9em;
+      }
+
+      .variant-a { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .variant-b { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .variant-c { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 15px 0;
+      }
+
+      th {
+          background: #f0f0f0;
+          padding: 12px;
+          text-align: left;
+          font-weight: 600;
+          border-bottom: 2px solid #d10000;
+      }
+
+      td {
+          padding: 10px 12px;
+          border-bottom: 1px solid #e0e0e0;
+      }
+
+      tr:hover {
+          background: #f5f5f5;
+      }
+
+      .price-highlight {
+          font-size: 1.4em;
+          font-weight: bold;
+          color: #d10000;
+          text-align: right;
+          margin-top: 15px;
+          padding: 15px;
+          background: #fff3cd;
+          border-radius: 8px;
+          border: 2px solid #ffc107;
+      }
+
+      .benefits-list {
+          list-style: none;
+          padding: 0;
+          margin: 15px 0;
+      }
+
+      .benefits-list li {
+          padding: 10px 0 10px 35px;
+          position: relative;
+          border-bottom: 1px solid #f0f0f0;
+      }
+
+      .benefits-list li:before {
+          content: "✓";
+          position: absolute;
+          left: 10px;
+          color: #28a745;
+          font-weight: bold;
+          font-size: 1.2em;
+      }
+
+      .summary-table {
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          padding: 20px;
+          border-radius: 10px;
+          margin-top: 30px;
+      }
+
+      .summary-table h3 {
+          color: #333;
+          margin-bottom: 20px;
+          text-align: center;
+      }
+
+      .total-cost {
+          font-size: 1.8em;
+          color: #d10000;
+          text-align: center;
+          margin: 20px 0;
+          padding: 20px;
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+
+      .process-info {
+          background: #e8f5e9;
+          border-left: 5px solid #4caf50;
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 5px;
+      }
+
+      .process-info h4 {
+          color: #2e7d32;
+          margin-bottom: 10px;
+      }
+
+      .tax-benefit {
+          background: #fff3e0;
+          border-left: 5px solid #ff9800;
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 5px;
+      }
+
+      .tax-benefit h4 {
+          color: #e65100;
+          margin-bottom: 10px;
+      }
+
+      .footer {
+          text-align: center;
+          padding: 30px;
+          color: #666;
+          font-size: 0.9em;
+          border-top: 2px solid #e0e0e0;
+          margin-top: 50px;
+      }
+
+      @media print {
+          body {
+              background: white;
+          }
+          .section {
+              box-shadow: none;
+              page-break-inside: avoid;
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>KOVONA SYSTEM, a.s.</h1>
+        <p class="subtitle">Komplexní návrh skupinového pojištění zaměstnanců</p>
+        <div class="date-info">
+          <p><strong>Datum návrhu:</strong> Listopad 2025</p>
+          <p><strong>Platnost nabídky:</strong> 30 dnů od data vystavení</p>
+          <p><strong>Zpracoval:</strong> Generali Česká pojišťovna a.s.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📊 Přehled zaměstnanců</h2>
+        <div class="employee-overview">
+          <div class="employee-card">
+            <h4>Ředitelé</h4>
+            <div class="count">20</div>
+            <p>Průměrný věk: 45,3 let</p>
+          </div>
+          <div class="employee-card">
+            <h4>THP</h4>
+            <div class="count">80</div>
+            <p>Průměrný věk: 43,8 let</p>
+          </div>
+          <div class="employee-card">
+            <h4>Dělníci</h4>
+            <div class="count">500</div>
+            <p>Průměrný věk: 45,4 let</p>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+          <strong>Celkový počet zaměstnanců: 600</strong>
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>💼 Modely pojištění pro ŘEDITELE (20 osob)</h2>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #1976d2;">
+          <h4 style="color: #1976d2; margin-bottom: 10px;">Charakteristika skupiny:</h4>
+          <p style="margin-bottom: 10px;">
+            Vysoká odpovědnost za chod společnosti, nadprůměrné příjmy (průměrně 80-120 tis. Kč/měsíc), často nejvyšší hypotéky (5-10 mil.
+            Kč). Věkový průměr 45,3 let znamená zvýšené riziko civilizačních chorob. Klíčové je udržení životního standardu rodiny při vážné
+            nemoci či úrazu a ochrana majetku.
+          </p>
+          <p>
+            <strong>Specifické potřeby:</strong> Finanční zajištění rodiny, pokrytí nadstandardní léčby, kompenzace výpadku vysokého příjmu,
+            ochrana investic a majetku.
+          </p>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta A - Komplexní krytí pro vrcholový management</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>2 100 000 Kč</td>
+              <td>4 851 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>1 400 000 Kč</td>
+              <td>1 120 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>1 400 000 Kč</td>
+              <td>4 200 Kč</td>
+            </tr>
+            <tr>
+              <td>Denní odškodné (DNL-8)</td>
+              <td>500 Kč/den</td>
+              <td>3 000 Kč</td>
+            </tr>
+            <tr>
+              <td>Následky závažného úrazu</td>
+              <td>1 000 000 Kč</td>
+              <td>800 Kč</td>
+            </tr>
+            <tr>
+              <td>Závažná onemocnění (rozšířená)</td>
+              <td>250 000 Kč</td>
+              <td>1 125 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 15 096 Kč/osoba | 301 920 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li>
+                <strong>Maximální ochrana příjmu:</strong> Při závažném onemocnění výplata 250 000 Kč okamžitě pokryje nadstandardní léčbu
+                nebo výpadek příjmu na 2-3 měsíce
+              </li>
+              <li>
+                <strong>Zajištění rodiny:</strong> Při smrti 2,1 mil. Kč = náhrada 2letého příjmu ředitele, rodina udrží životní standard
+              </li>
+              <li>
+                <strong>Ochrana kariéry:</strong> Vysoké krytí trvalých následků (až 11,2 mil. Kč) kompenzuje případné ukončení manažerské
+                kariéry
+              </li>
+              <li><strong>Prestiž a loajalita:</strong> Premium pojištění jako statusový benefit odpovídající pozici ve firmě</li>
+              <li>
+                <strong>Daňová optimalizace:</strong> Benefit nezatížený odvody, pro ředitele znamená reálnou hodnotu cca 25 000 Kč ročně
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta B - Optimalizované řešení pro klíčové zaměstnance</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>1 500 000 Kč</td>
+              <td>3 465 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>1 000 000 Kč</td>
+              <td>800 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>500 000 Kč</td>
+              <td>1 500 Kč</td>
+            </tr>
+            <tr>
+              <td>Následky závažného úrazu</td>
+              <td>1 000 000 Kč</td>
+              <td>800 Kč</td>
+            </tr>
+            <tr>
+              <td>Závažná onemocnění (rozšířená)</td>
+              <td>250 000 Kč</td>
+              <td>1 125 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 7 690 Kč/osoba | 153 800 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li><strong>Optimální cena/výkon:</strong> O 50% nižší náklady než varianta A při zachování klíčové ochrany</li>
+              <li>
+                <strong>Doplněk k hypotéce:</strong> Neruší stávající pojištění hypotéky, ale významně rozšiřuje krytí o závažná onemocnění
+                a úrazy
+              </li>
+              <li>
+                <strong>Finanční injekce při krizi:</strong> 250 000 Kč při diagnóze rakoviny nebo infarktu pokryje speciální léčbu nebo
+                úpravu bydlení
+              </li>
+              <li>
+                <strong>Ochrana budoucích příjmů:</strong> Milion při závažném úrazu kompenzuje případnou ztrátu schopnosti vykonávat řídící
+                funkci
+              </li>
+              <li>
+                <strong>Rozumný benefit:</strong> Atraktivní pojištění bez přemrštěných nákladů - ideální pro cost-conscious management
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta C - Řešení hypotečních závazků s rozšířenou ochranou</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>2 500 000 Kč</td>
+              <td>5 775 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>1 000 000 Kč</td>
+              <td>800 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>500 000 Kč</td>
+              <td>1 500 Kč</td>
+            </tr>
+            <tr>
+              <td>Závažná onemocnění (rozšířená)</td>
+              <td>200 000 Kč</td>
+              <td>900 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 8 975 Kč/osoba | 179 500 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li>
+                <strong>Náhrada bankovního pojištění:</strong> Krytí 2,5 mil. Kč plně pokryje hypotéky do 7-8 mil. Kč (průměrná hypotéka
+                ředitele)
+              </li>
+              <li>
+                <strong>Úspora nákladů:</strong> Nahrazení individuálního pojištění hypotéky (cca 2 000 Kč/měsíc) skupinovým (750 Kč/měsíc)
+              </li>
+              <li><strong>Širší ochrana:</strong> Oproti bankovnímu pojištění navíc krytí úrazů a závažných onemocnění</li>
+              <li><strong>Jednoduchá administrace:</strong> Převinkulaci vyřídíme za klienta, stačí plná moc</li>
+              <li><strong>Flexibilita:</strong> Při splacení hypotéky automaticky benefit pro rodinu bez změny pojistné smlouvy</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🏢 Modely pojištění pro THP (80 osob)</h2>
+
+        <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #4caf50;">
+          <h4 style="color: #2e7d32; margin-bottom: 10px;">Charakteristika skupiny:</h4>
+          <p style="margin-bottom: 10px;">
+            Technický a administrativní personál s průměrnými příjmy 35-50 tis. Kč/měsíc, hypotéky typicky 2-4 mil. Kč. Věkový průměr 43,8
+            let. Kombinace kancelářské práce a občasných výjezdů do terénu. Klíčová skupina pro chod firmy s potřebou stability a jistoty.
+          </p>
+          <p>
+            <strong>Specifické potřeby:</strong> Zajištění hypotéky a rodinného rozpočtu, ochrana před výpadkem příjmu při nemoci, pokrytí
+            nákladů na léčbu civilizačních chorob, motivační benefit pro stabilizaci.
+          </p>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta A - Komplexní ochrana středního managementu</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>800 000 Kč</td>
+              <td>1 760 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>600 000 Kč</td>
+              <td>480 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>400 000 Kč</td>
+              <td>1 200 Kč</td>
+            </tr>
+            <tr>
+              <td>Následky závažného úrazu</td>
+              <td>600 000 Kč</td>
+              <td>480 Kč</td>
+            </tr>
+            <tr>
+              <td>Onkologická onemocnění</td>
+              <td>400 000 Kč</td>
+              <td>576 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 4 496 Kč/osoba | 359 680 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li>
+                <strong>Ochrana příjmu rodiny:</strong> 800 000 Kč při smrti = 18 měsíců průměrného platu, čas na stabilizaci rodinné
+                situace
+              </li>
+              <li>
+                <strong>Prevence onkologických rizik:</strong> 400 000 Kč při diagnóze rakoviny pokryje biologickou léčbu nebo výpadek
+                příjmu partnera pečujícího o nemocného
+              </li>
+              <li>
+                <strong>Zajištění při úrazu:</strong> Až 3,2 mil. Kč při trvalých následcích, 600 000 Kč při invaliditě - ochrana
+                středněpříjmové rodiny
+              </li>
+              <li><strong>Motivační prvek:</strong> Nadstandardní benefit posiluje loajalitu klíčových THP pracovníků</li>
+              <li><strong>Prevence fluktuace:</strong> Kvalitní pojištění jako konkurenční výhoda při udržení specialistů</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta B - Základní ochrana s důrazem na efektivitu</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>500 000 Kč</td>
+              <td>1 100 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>300 000 Kč</td>
+              <td>240 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>300 000 Kč</td>
+              <td>900 Kč</td>
+            </tr>
+            <tr>
+              <td>Onkologická onemocnění</td>
+              <td>300 000 Kč</td>
+              <td>432 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 2 672 Kč/osoba | 213 760 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li><strong>Ekonomická efektivita:</strong> Náklady pouze 223 Kč/měsíc - srovnatelné s příspěvkem na stravování</li>
+              <li>
+                <strong>Pokrytí základních rizik:</strong> 500 000 Kč při smrti = 12 měsíčních platů, čas na vyřízení dědictví a stabilizaci
+              </li>
+              <li><strong>Onkologická prevence:</strong> 300 000 Kč specificky na nejčastější diagnózy ve věku 40-50 let</li>
+              <li><strong>Plošný benefit:</strong> Cenově dostupné pro všech 80 THP pracovníků bez rozdílu pozice</li>
+              <li><strong>Vstupní pojištění:</strong> Ideální první krok k zavedení benefitů, možnost postupného rozšiřování</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta C - Specializované řešení pro držitele hypoték</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>1 200 000 Kč</td>
+              <td>2 640 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>400 000 Kč</td>
+              <td>320 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>300 000 Kč</td>
+              <td>900 Kč</td>
+            </tr>
+            <tr>
+              <td>Závažná onemocnění (rozšířená)</td>
+              <td>150 000 Kč</td>
+              <td>540 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 4 400 Kč/osoba | 352 000 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li><strong>Hypoteční jistota:</strong> 1,2 mil. Kč pokryje průměrnou hypotéku THP pracovníka (2,5-3 mil. Kč)</li>
+              <li><strong>Reálná úspora:</strong> Nahrazení bankovního pojištění (800-1200 Kč/měs.) skupinovým (367 Kč/měs.)</li>
+              <li><strong>Komplexnější ochrana:</strong> Oproti bance navíc závažná onemocnění - rakovina, infarkt, mrtvice</li>
+              <li><strong>Administrativní jednoduchost:</strong> Firma vyřídí převinkulaci hromadně pro všechny zaměstnance</li>
+              <li><strong>Dvojí využití:</strong> Po splacení hypotéky automaticky životní pojištění pro rodinu</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>👷 Modely pojištění pro DĚLNÍKY (500 osob)</h2>
+
+        <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #ff9800;">
+          <h4 style="color: #e65100; margin-bottom: 10px;">Charakteristika skupiny:</h4>
+          <p style="margin-bottom: 10px;">
+            Výrobní dělníci s příjmy 25-35 tis. Kč/měsíc, zvýšené riziko pracovních úrazů, hypotéky typicky 1,5-2,5 mil. Kč. Věkový průměr
+            45,4 let. Fyzicky náročná práce s rizikem trvalých následků. Největší skupina zaměstnanců (83% všech pracovníků).
+          </p>
+          <p>
+            <strong>Specifické potřeby:</strong> Ochrana při pracovním úrazu, kompenzace výpadku příjmu při pracovní neschopnosti, zajištění
+            základních potřeb rodiny, dostupné řešení hypotéky, prevence invalidity.
+          </p>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta A - Maximální úrazová ochrana pro rizikové profese</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>300 000 Kč</td>
+              <td>693 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>600 000 Kč</td>
+              <td>480 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>1 200 000 Kč</td>
+              <td>3 600 Kč</td>
+            </tr>
+            <tr>
+              <td>Denní odškodné (DNL-8)</td>
+              <td>300 Kč/den</td>
+              <td>1 800 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 6 573 Kč/osoba | 3 286 500 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li>
+                <strong>Maximální úrazová ochrana:</strong> 1,2 mil. Kč základní částka, až 9,6 mil. Kč při 100% postižení - adekvátní
+                rizikovosti práce
+              </li>
+              <li><strong>Denní kompenzace:</strong> 300 Kč/den od 8. dne = dorovnání rozdílu mezi nemocenskou a čistou mzdou</li>
+              <li><strong>Prevence chudoby:</strong> Při závažném úrazu finanční zajištění pro celou rodinu na několik let</li>
+              <li><strong>Ochrana před invaliditou:</strong> Vysoké plnění umožní rekvalifikaci nebo úpravu bydlení pro invaliditu</li>
+              <li><strong>Konkurenční výhoda:</strong> Nadstandardní úrazové pojištění jako benefit při náboru kvalifikovaných dělníků</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta B - Ekonomické řešení pro velké skupiny</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>150 000 Kč</td>
+              <td>347 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>300 000 Kč</td>
+              <td>240 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>600 000 Kč</td>
+              <td>1 800 Kč</td>
+            </tr>
+            <tr>
+              <td>Denní odškodné (DNL-8)</td>
+              <td>150 Kč/den</td>
+              <td>900 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 3 287 Kč/osoba | 1 643 500 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li><strong>Dostupnost pro všechny:</strong> 274 Kč/měsíc = méně než 1% průměrné mzdy dělníka</li>
+              <li><strong>Priorita úrazů:</strong> 600 000 Kč na trvalé následky (až 4,8 mil. při 100%) - klíčové pro manuální práci</li>
+              <li><strong>Denní příspěvek:</strong> 150 Kč/den pomůže pokrýt zvýšené náklady při nemoci (doprava, léky)</li>
+              <li><strong>Základní jistota:</strong> 150 000 Kč při smrti pokryje pohřeb a nejnutnější výdaje pozůstalých</li>
+              <li><strong>Plošný benefit:</strong> Stejné podmínky pro všech 500 dělníků = spravedlivý přístup, prevence nespokojenosti</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insurance-model">
+          <div class="model-header">
+            <h3>Varianta C - Ochrana rodinného bydlení</h3>
+          </div>
+          <table>
+            <tr>
+              <th>Riziko</th>
+              <th>Pojistná částka</th>
+              <th>Roční pojistné/osoba</th>
+            </tr>
+            <tr>
+              <td>Smrt z jakýchkoliv příčin</td>
+              <td>700 000 Kč</td>
+              <td>1 617 Kč</td>
+            </tr>
+            <tr>
+              <td>Smrt úrazem</td>
+              <td>300 000 Kč</td>
+              <td>240 Kč</td>
+            </tr>
+            <tr>
+              <td>Trvalé následky úrazu (8× progrese)</td>
+              <td>400 000 Kč</td>
+              <td>1 200 Kč</td>
+            </tr>
+            <tr>
+              <td>Závažná onemocnění (základní)</td>
+              <td>100 000 Kč</td>
+              <td>360 Kč</td>
+            </tr>
+          </table>
+          <div class="price-highlight">Celkové roční pojistné: 3 417 Kč/osoba | 1 708 500 Kč/skupina</div>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <h4 style="color: #0369a1; margin-bottom: 10px;">Proč tato varianta dává smysl:</h4>
+            <ul class="benefits-list">
+              <li><strong>Zajištění bydlení:</strong> 700 000 Kč pokryje hypotéku 1,5-2 mil. Kč typickou pro dělníky</li>
+              <li><strong>Výrazná úspora:</strong> Skupinové pojištění 285 Kč/měs. vs. bankovní 500-700 Kč/měs.</li>
+              <li><strong>Ochrana před nemocemi:</strong> 100 000 Kč při rakovině nebo infarktu - pomoc s léčbou a rekonvalescencí</li>
+              <li><strong>Sociální jistota:</strong> Prevence ztráty bydlení = stabilní zaměstnanec, nižší fluktuace</li>
+              <li>
+                <strong>Hromadná administrace:</strong> Firma zajistí převinkulaci pro všechny dělníky najednou, bez časové ztráty pro
+                zaměstnance
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📈 Souhrnná kalkulace a doporučení</h2>
+
+        <div class="summary-table">
+          <h3>Porovnání celkových ročních nákladů</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Skupina</th>
+                <th>Počet osob</th>
+                <th>Varianta A</th>
+                <th>Varianta B</th>
+                <th>Varianta C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ředitelé</td>
+                <td>20</td>
+                <td>301 920 Kč</td>
+                <td>153 800 Kč</td>
+                <td>179 500 Kč</td>
+              </tr>
+              <tr>
+                <td>THP</td>
+                <td>80</td>
+                <td>359 680 Kč</td>
+                <td>213 760 Kč</td>
+                <td>352 000 Kč</td>
+              </tr>
+              <tr>
+                <td>Dělníci</td>
+                <td>500</td>
+                <td>3 286 500 Kč</td>
+                <td>1 643 500 Kč</td>
+                <td>1 708 500 Kč</td>
+              </tr>
+              <tr style="font-weight: bold; background: #f0f0f0;">
+                <td colspan="2">CELKEM</td>
+                <td>3 948 100 Kč</td>
+                <td>2 011 060 Kč</td>
+                <td>2 240 000 Kč</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total-cost">
+          <strong>Doporučená kombinace (optimální poměr cena/výkon):</strong><br />
+          Ředitelé - Varianta B | THP - Varianta B | Dělníci - Varianta B<br />
+          <span style="font-size: 1.3em; color: #28a745;">Celkové roční náklady: 2 011 060 Kč</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🔄 Proces převinkulace hypotéky</h2>
+        <div class="process-info">
+          <h4>Jak funguje převinkulace?</h4>
+          <p>
+            Převinkulace je proces změny vinkulace (zajištění) pojistné smlouvy ve prospěch banky poskytující hypotéku. Díky skupinovému
+            pojištění můžete:
+          </p>
+          <ol style="margin: 15px 0; padding-left: 20px;">
+            <li>Zrušit individuální pojištění hypotéky u banky (často předražené)</li>
+            <li>Vinkulovat skupinové pojištění ve prospěch banky</li>
+            <li>Ušetřit až 70% nákladů na pojištění hypotéky</li>
+            <li>Získat širší pojistnou ochranu za nižší cenu</li>
+          </ol>
+          <p><strong>Postup:</strong> Vše vyřídíme za vás na jedné schůzce. Stačí přinést aktuální smlouvu o hypotéce a plnou moc.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>💰 Daňové výhody</h2>
+        <div class="tax-benefit">
+          <h4>Pro zaměstnavatele:</h4>
+          <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Příspěvky na pojištění jsou daňově uznatelným nákladem (§24 zákona o dani z příjmů)</li>
+            <li>Bez limitu pro zaměstnavatele</li>
+            <li>Snížení základu daně z příjmů právnických osob</li>
+            <li>Možnost optimalizace mzdových nákladů</li>
+          </ul>
+
+          <h4 style="margin-top: 20px;">Pro zaměstnance:</h4>
+          <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Nepeněžní plnění od zaměstnavatele</li>
+            <li>Nižší cena než individuální pojištění (skupinové slevy)</li>
+            <li>Možnost daňového odpočtu u soukromého životního pojištění (až 48 000 Kč ročně)</li>
+            <li>Benefit nezatížený sociálním a zdravotním pojištěním</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🎯 Klíčové výhody skupinového pojištění</h2>
+        <ul class="benefits-list">
+          <li><strong>Žádné zdravotní prohlídky</strong> - pojištění bez zkoumání zdravotního stavu (kromě onkologického pojištění)</li>
+          <li><strong>Okamžitá účinnost</strong> - pojištění platí od prvního dne následujícího měsíce</li>
+          <li><strong>Skupinové slevy</strong> - až 40% sleva oproti individuálnímu pojištění</li>
+          <li><strong>Flexibilita</strong> - možnost průběžných změn podle potřeb firmy</li>
+          <li><strong>Jednoduchost</strong> - veškerá administrativa na straně pojišťovny</li>
+          <li><strong>Benefit "Plánovaný adrenalin"</strong> - krytí firemních teambuilding aktivit</li>
+          <li><strong>40% sleva pro zaměstnance</strong> - na majetkové pojištění (domácnost, nemovitost, auto)</li>
+          <li><strong>Stabilizace zaměstnanců</strong> - zvýšení loajality a motivace</li>
+          <li><strong>Konkurenční výhoda</strong> - při získávání nových zaměstnanců</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>📋 Další kroky</h2>
+        <div class="process-info">
+          <h4>Co je potřeba pro sjednání?</h4>
+          <ol style="margin: 15px 0; padding-left: 20px;">
+            <li><strong>Rozhodnutí o variantě</strong> - výběr vhodné kombinace pro jednotlivé skupiny</li>
+            <li><strong>Seznam zaměstnanců</strong> - jméno, příjmení, rodné číslo, pracovní zařazení</li>
+            <li><strong>Podpis smlouvy</strong> - osobní schůzka s podpisem všech dokumentů</li>
+            <li><strong>Přihlášky zaměstnanců</strong> - vyplnění jednoduchého formuláře (zajistíme)</li>
+            <li><strong>Aktivace pojištění</strong> - od 1. dne následujícího měsíce</li>
+          </ol>
+
+          <p style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 5px;">
+            <strong>Vše vyřídíme na jedné schůzce!</strong> Příprava dokumentů, vysvětlení zaměstnancům, nastavení plateb - kompletní servis
+            zajistí Generali Česká pojišťovna.
+          </p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p><strong>Generali Česká pojišťovna a.s.</strong></p>
+        <p>Spálená 75/16, 113 04 Praha 1 | IČO: 45272956</p>
+        <p>Tel: +420 241 114 114 | Email: servis@generaliceska.cz</p>
+        <p style="margin-top: 20px;">© 2025 Generali Česká pojišťovna a.s. Všechna práva vyhrazena.</p>
+      </div>
+    </div>
+  </body>
+</html>
